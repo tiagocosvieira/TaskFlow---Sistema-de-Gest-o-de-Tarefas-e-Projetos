@@ -1,0 +1,28 @@
+{
+  "name": "taskflow-pi2",
+  "version": "1.0.0",
+  "description": "Sistema de Gestao de Tarefas e Projetos - MVC",
+  "keywords": [
+    "mvc",
+    "nodejs",
+    "taskflow"
+  ],
+  "homepage": "https://github.com/tiagocosvieira/TaskFlow---Sistema-de-Gest-o-de-Tarefas-e-Projetos#readme",
+  "bugs": {
+    "url": "https://github.com/tiagocosvieira/TaskFlow---Sistema-de-Gest-o-de-Tarefas-e-Projetos/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tiagocosvieira/TaskFlow---Sistema-de-Gest-o-de-Tarefas-e-Projetos.git"
+  },
+  "license": "MIT",
+  "author": "Tiago Vieira",
+  "type": "commonjs",
+  "main": "server.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node server.js"
+  }
+}

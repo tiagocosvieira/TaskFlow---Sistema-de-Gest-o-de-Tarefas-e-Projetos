@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Gestão de Projetos e Tarefas</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-main: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar / Navegação Lateral */
+        aside {
+            width: 260px;
+            background-color: #ffffff;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            background-color: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-links button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            text-align: left;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links button.active, .nav-links button:hover {
+            background-color: #eef2ff;
+            color: var(--primary);
+        }
+
+        /* Conteúdo Principal */
+        main {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .top-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #cbd5e1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #334155;
+        }
+
+        /* Seções de Telas (Views Dinâmicas) */
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Grid de Layout do Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+
+        /* Formulários e Inputs */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Quadro Kanban */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .kanban-column {
+            background-color: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 400px;
+        }
+
+        .kanban-column h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .badge-alta { background-color: #fee2e2; color: #991b1b; }
+        .badge-media { background-color: #fef3c7; color: #92400e; }
+        .badge-baixa { background-color: #dcfce7; color: #166534; }
+
+        .date-text {
+            color: var(--text-muted);
+        }
+
+        /* Tabelas Estilizadas para Projetos e Equipe */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .kanban-board { grid-template-columns: 1fr; }
+            aside { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navegação Lateral com Botões Funcionais -->
+    <aside>
+        <div class="logo-area">
+            <div class="logo-icon">TF</div>
+            <div class="logo-text">
+                <h1>TaskFlow</h1>
+                <p>Gestão Ágil</p>
+            </div>
+        </div>
+        <ul class="nav-links">
+            <li><button onclick="mudarAba('dashboard', this)" class="active">📊 Dashboard</button></li>
+            <li><button onclick="mudarAba('projetos', this)">📁 Projetos</button></li>
+            <li><button onclick="mudarAba('equipe', this)">👥 Equipe</button></li>
+            <li><button onclick="mudarAba('configuracoes', this)">⚙️ Configurações</button></li>
+        </ul>
+    </aside>
+
+    <!-- Conteúdo Principal Dinâmico -->
+    <main>
+        <div class="top-header">
+            <h2 id="titulo-pagina">Visão Geral do Dashboard</h2>
+            <div class="user-profile">
+                <div class="avatar">AD</div>
+                <div>
+                    <strong>Admin</strong>
+                    <div style="font-size: 12px; color: var(--text-muted);">Desenvolvedor</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. SEÇÃO: DASHBOARD -->
+        <div id="view-dashboard" class="view-section active">
+            <div class="dashboard-grid">
+                <!-- Formulário de Nova Tarefa -->
+                <div class="card">
+                    <h3>Criar Nova Tarefa</h3>
+                    <form id="taskForm">
+                        <div class="form-group">
+                            <label for="titulo">Título da Tarefa</label>
+                            <input type="text" id="titulo" required placeholder="Ex: Implementar API REST">
+                        </div>
+                        <div class="form-group">
+                            <label for="prioridade">Prioridade</label>
+                            <select id="prioridade">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="data_vencimento">Data de Vencimento</label>
+                            <input type="date" id="data_vencimento" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Adicionar Tarefa</button>
+                    </form>
+                </div>
+
+                <!-- Painel Kanban -->
+                <div class="card">
+                    <h3>Quadro Kanban de Entregas</h3>
+                    <div class="kanban-board">
+                        <div class="kanban-column">
+                            <h4>A Fazer <span id="count-afazer" class="badge" style="background:#e2e8f0; color:#334155;">1</span></h4>
+                            <div class="task-list" id="col-afazer">
+                                <div class="task-card">
+                                    <div class="task-title">Configurar AWS EC2</div>
+                                    <div class="task-footer">
+                                        <span class="badge badge-alta">Alta</span>
+                                        <span class="date-text">10/03/2026</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="kanban-column">
+                            <h4>Em Andamento <span id="count-andamento" class="badge" style="background:#e2e8f0; color:#334155;">0</span></h4>
+                            <div class="task-list" id="col-andamento"></div>
+                        </div>
+                        <div class="kanban-column">
+                            <h4>Concluído <span id="count-concluido" class="badge" style="background:#e2e8f0; color:#334155;">0</span></h4>
+                            <div class="task-list" id="col-concluido"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SEÇÃO: PROJETOS -->
+        <div id="view-projetos" class="view-section">
+            <div class="card">
+                <h3>Gerenciamento de Projetos</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Lista de todos os projetos corporativos ativos no sistema.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Projeto</th>
+                            <th>Descrição</th>
+                            <th>Data de Início</th>
+                            <th>Previsão Término</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Migração Cloud</strong></td>
+                            <td>Migrar servidores locais para a AWS</td>
+                            <td>01/03/2026</td>
+                            <td>15/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Portal do Cliente</strong></td>
+                            <td>Desenvolvimento de painel web responsivo</td>
+                            <td>10/03/2026</td>
+                            <td>30/05/2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. SEÇÃO: EQUIPE -->
+        <div id="view-equipe" class="view-section">
+            <div class="card">
+                <h3>Colaboradores da Equipe</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Membros vinculados ao ambiente de desenvolvimento.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Cargo</th>
+                            <th>Permissão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Admin Master</strong></td>
+                            <td>admin@taskflow.com</td>
+                            <td>Arquiteto de Software</td>
+                            <td><span class="badge badge-alta">Administrador</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>João da Silva</strong></td>
+                            <td>joao@taskflow.com</td>
+                            <td>Desenvolvedor Front-end</td>
+                            <td><span class="badge badge-media">Membro</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. SEÇÃO: CONFIGURAÇÕES -->
+        <div id="view-configuracoes" class="view-section">
+            <div class="card" style="max-width: 600px;">
+                <h3>Configurações do Sistema</h3>
+                <form onsubmit="event.preventDefault(); alert('Configurações salvas com sucesso!');">
+                    <div class="form-group">
+                        <label>Nome da Organização</label>
+                        <input type="text" value="CodeMatrix / TaskFlow Corp">
+                    </div>
+                    <div class="form-group">
+                        <label>Notificações por E-mail</label>
+                        <select>
+                            <option>Ativadas (Todas as tarefas)</option>
+                            <option>Apenas prazos vencidos</option>
+                            <option>Desativadas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fuso Horário</label>
+                        <input type="text" value="America/Sao_Paulo (GMT-3)" disabled style="background:#f8fafc;">
+                    </div>
+                    <button type="submit" class="btn-primary">Salvar Alterações</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Função de Navegação Dinâmica entre as abas da Sidebar
+        function mudarAba(nomeAba, elementoBotao) {
+            // Esconde todas as seções
+            document.querySelectorAll('.view-section').forEach(secao => {
+                secao.classList.remove('active');
+            });
+
+            // Remove a classe active de todos os botões da sidebar
+            document.querySelectorAll('.nav-links button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Ativa a seção correspondente
+            document.getElementById(`view-${nomeAba}`).classList.add('active');
+            
+            // Ativa o botão clicado
+            elementoBotao.classList.add('active');
+
+            // Atualiza o título dinâmico do cabeçalho
+            const titulos = {
+                'dashboard': 'Visão Geral do Dashboard',
+                'projetos': 'Gerenciamento de Projetos',
+                'equipe': 'Membros da Equipe',
+                'configuracoes': 'Configurações do Sistema'
+            };
+            document.getElementById('titulo-pagina').innerText = titulos[nomeAba];
+        }
+
+        // Lógica de inclusão de tarefas no Dashboard
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const titulo = document.getElementById('titulo').value;
+            const prioridade = document.getElementById('prioridade').value;
+            const dataVencimento = document.getElementById('data_vencimento').value;
+
+            let dataFormatada = "Sem prazo";
+            if(dataVencimento) {
+                const partes = dataVencimento.split('-');
+                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            let badgeClass = 'badge-media';
+            if(prioridade === 'Alta') badgeClass = 'badge-alta';
+            if(prioridade === 'Baixa') badgeClass = 'badge-baixa';
+
+            const colAfazer = document.getElementById('col-afazer');
+            const card = document.createElement('div');
+            card.className = 'task-card';
+            card.innerHTML = `
+                <div class="task-title">${titulo}</div>
+                <div class="task-footer">
+                    <span class="badge ${badgeClass}">${prioridade}</span>
+                    <span class="date-text">${dataFormatada}</span>
+                </div>
+            `;
+            colAfazer.appendChild(card);
+
+            this.reset();
+            atualizarContadores();
+        });
+
+        function atualizarContadores() {
+            document.getElementById('count-afazer').innerText = document.getElementById('col-afazer').children.length;
+            document.getElementById('count-andamento').innerText = document.getElementById('col-andamento').children.length;
+            document.getElementById('count-concluido').innerText = document.getElementById('col-concluido').children.length;
+        }
+
+        atualizarContadores();
+    </script>
+</body>
+</html>
