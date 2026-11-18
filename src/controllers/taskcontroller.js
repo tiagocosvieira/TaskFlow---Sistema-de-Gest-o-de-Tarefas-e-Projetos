@@ -3,7 +3,7 @@
  * Faz a ponte entre as requisições da View e a manipulação de dados no Model.
  */
 
-const TaskModel = require('../models/TaskModel');
+const TaskModel = require('../models/taskModel');
 
 class TaskController {
     // Retorna todos os projetos para exibição
